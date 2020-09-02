@@ -18,8 +18,28 @@
             w: 0,
             h: 0
         },
-        objects: 0
+        objects: 0,
+        keys: {
+            a: false,
+            w: false,
+            s: false,
+            d: false
+        }
     };
+
+    function loadImage(path) {
+        const image = new Image();
+        image.src = path;
+
+        return new Promise(resolve => {
+            image.onload = () => resolve(image);
+        });
+    }
+
+    const aKeyImage = await loadImage('./a-key.png');
+    const wKeyImage = await loadImage('./w-key.png');
+    const sKeyImage = await loadImage('./s-key.png');
+    const dKeyImage = await loadImage('./d-key.png');
 
     window.addEventListener('keypress', ({ keyCode }) => {
         const KEYCODE_A = 97;
@@ -27,7 +47,7 @@
         const KEYCODE_S = 115;
         const KEYCODE_D = 100;
 
-        const MOVEMENT_DELTA = 100;
+        const MOVEMENT_DELTA = 50;
 
         if (keyCode === KEYCODE_A) {
             updatePlayerPosition(state.player.x - MOVEMENT_DELTA, state.player.y);
@@ -132,6 +152,11 @@
         context.fillText(`map-w: ${state.map.w}, map-h: ${state.map.h}`, 500, 20);
         context.fillStyle = 'blue';
         context.fillText(`objects: ${state.objects}`, 800, 20);
+
+        context.drawImage(wKeyImage, gameCanvas.width - 150, 20, 50, 50);
+        context.drawImage(sKeyImage, gameCanvas.width - 150, 60, 50, 50);
+        context.drawImage(aKeyImage, gameCanvas.width - 190, 60, 50, 50);
+        context.drawImage(dKeyImage, gameCanvas.width - 110, 60, 50, 50);
 
         window.requestAnimationFrame(drawCanvas);
     }
