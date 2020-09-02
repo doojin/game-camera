@@ -1,4 +1,10 @@
 (async () => {
+    const mapResource = await fetch('./map.json');
+    const map = await mapResource.json();
+
+    const gameCanvas = document.querySelector('.game');
+    const context = gameCanvas.getContext('2d');
+
     const state = {
         camera: {
             x: 0,
@@ -35,12 +41,34 @@
         }
     });
 
+    function fixInvalidPlayerPosition() {
+        const PLAYER_ICON_SIZE = 50;
+
+        if (state.player.x < 0) {
+            state.player.x = 0;
+        }
+
+        if (state.player.x > gameCanvas.width - PLAYER_ICON_SIZE) {
+            state.player.x = gameCanvas.width - PLAYER_ICON_SIZE;
+        }
+
+        if (state.player.y < 0) {
+            state.player.y = 0;
+        }
+
+        if (state.player.y > gameCanvas.height - PLAYER_ICON_SIZE) {
+            state.player.y = gameCanvas.height - PLAYER_ICON_SIZE;
+        }
+    }
+
     function updatePlayerPosition(x, y) {
         state.player.x = x;
         state.player.y = y;
 
         state.camera.x = x;
         state.camera.y = y;
+
+        fixInvalidPlayerPosition();
     }
     
     const playerImage = new Image();
@@ -49,18 +77,14 @@
         playerImage.onload = resolve;
     });
 
-    const mapResource = await fetch('./map.json');
-    const map = await mapResource.json();
-
-    const gameCanvas = document.querySelector('.game');
-    const context = gameCanvas.getContext('2d');
-
     function resizeCallback() {
         const canvasWidth = document.body.clientWidth * 0.8;
         const canvasHeight = document.body.clientHeight * 0.8;
 
         gameCanvas.width = canvasWidth;
         gameCanvas.height = canvasHeight;
+
+        fixInvalidPlayerPosition();
     }
 
     window.addEventListener('resize', resizeCallback);
