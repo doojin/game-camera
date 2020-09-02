@@ -41,6 +41,42 @@
     const sKeyImage = await loadImage('./s-key.png');
     const dKeyImage = await loadImage('./d-key.png');
 
+    window.addEventListener('keydown', ({ key }) => {
+        if (key === 'a') {
+            state.keys.a = true;
+        }
+
+        if (key === 'w') {
+            state.keys.w = true;
+        }
+
+        if (key === 's') {
+            state.keys.s = true;
+        }
+
+        if (key === 'd') {
+            state.keys.d = true;
+        }
+    });
+
+    window.addEventListener('keyup', ({ key }) => {
+        if (key === 'a') {
+            state.keys.a = false;
+        }
+
+        if (key === 'w') {
+            state.keys.w = false;
+        }
+
+        if (key === 's') {
+            state.keys.s = false;
+        }
+
+        if (key === 'd') {
+            state.keys.d = false;
+        }
+    });
+
     window.addEventListener('keypress', ({ keyCode }) => {
         const KEYCODE_A = 97;
         const KEYCODE_W = 119;
@@ -157,6 +193,30 @@
         context.drawImage(sKeyImage, gameCanvas.width - 150, 60, 50, 50);
         context.drawImage(aKeyImage, gameCanvas.width - 190, 60, 50, 50);
         context.drawImage(dKeyImage, gameCanvas.width - 110, 60, 50, 50);
+
+        if (state.keys.w) {
+            context.beginPath();
+            context.rect(gameCanvas.width - 150, 20, 50, 50);
+            context.stroke();
+        }
+
+        if (state.keys.s) {
+            context.beginPath();
+            context.rect(gameCanvas.width - 150, 60, 50, 50);
+            context.stroke();
+        }
+
+        if (state.keys.a) {
+            context.beginPath();
+            context.rect(gameCanvas.width - 190, 60, 50, 50);
+            context.stroke();
+        }
+
+        if (state.keys.d) {
+            context.beginPath();
+            context.rect(gameCanvas.width - 110, 60, 50, 50);
+            context.stroke();
+        }
 
         window.requestAnimationFrame(drawCanvas);
     }
