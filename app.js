@@ -13,6 +13,10 @@
         player: {
             x: 0,
             y: 0
+        },
+        map: {
+            w: 0,
+            h: 0
         }
     };
 
@@ -78,13 +82,18 @@
     });
 
     function resizeCallback() {
-        const canvasWidth = document.body.clientWidth * 0.8;
-        const canvasHeight = document.body.clientHeight * 0.8;
+        const canvasWidth = Math.round(document.body.clientWidth * 0.8);
+        const canvasHeight = Math.round(document.body.clientHeight * 0.8);
 
         gameCanvas.width = canvasWidth;
         gameCanvas.height = canvasHeight;
 
         fixInvalidPlayerPosition();
+
+        const objectsRightBorders = map.objects.map(object => object.x + object.w);
+        const objectsBottomBorders = map.objects.map(object => object.y + object.h);
+        state.map.w = Math.max(canvasWidth, ...objectsRightBorders);
+        state.map.h = Math.max(canvasHeight, ...objectsBottomBorders);
     }
 
     window.addEventListener('resize', resizeCallback);
