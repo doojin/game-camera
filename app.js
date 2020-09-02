@@ -75,10 +75,10 @@
         fixInvalidPlayerPosition();
     }
     
-    const playerImage = new Image();
-    playerImage.src = './player.svg';
+    const cameraImage = new Image();
+    cameraImage.src = './camera.svg';
     await new Promise(resolve => {
-        playerImage.onload = resolve;
+        cameraImage.onload = resolve;
     });
 
     function resizeCallback() {
@@ -109,7 +109,7 @@
             context.stroke();
         });
 
-        context.drawImage(playerImage, state.player.x, state.player.y);
+        context.drawImage(cameraImage, state.camera.x, state.camera.y);
 
         context.font = '20px Arial';
         context.fillStyle = 'green';
