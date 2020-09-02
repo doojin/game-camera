@@ -1,6 +1,37 @@
 (async () => {
-    const mapResource = await fetch('./map.json');
-    const map = await mapResource.json();
+    const map = generateMap();
+
+    function generateMap() {
+        const objectSpaceSize = 250;
+        const mapWidth = 3000;
+        const mapHeight = 1000;
+        const objectPaddingMin = objectSpaceSize * 0.1;
+        const objectPaddingMax = objectSpaceSize * 0.5;
+        const colors = [
+            '#32a852',
+            '#3286ab',
+            '#9030a6',
+            '#a32e68',
+            '#9a9e2b'
+        ];
+
+        const map = { objects: [] };
+        for (let i = 0; i < mapWidth / objectSpaceSize; i++) {
+            for (let j = 0; j < mapHeight / objectSpaceSize; j++) {
+                const marginLeft = Math.random() * (objectPaddingMax - objectPaddingMin) + objectPaddingMin;
+                const marginTop = Math.random() * (objectPaddingMax - objectPaddingMin) + objectPaddingMin;
+                const w = objectSpaceSize - marginLeft * 2;
+                const h = objectSpaceSize - marginTop * 2;
+                const x = objectSpaceSize * i + marginLeft;
+                const y = objectSpaceSize * j + marginTop;
+                const colorIndex = Math.round(Math.random() * 4);
+                const c = colors[colorIndex];
+                map.objects.push({ w, h, x, y, c })
+            }
+        }
+
+        return map;
+    }
 
     const gameCanvas = document.querySelector('.game');
     const context = gameCanvas.getContext('2d');
@@ -143,8 +174,8 @@
 
         const objectsRightBorders = map.objects.map(object => object.x + object.w);
         const objectsBottomBorders = map.objects.map(object => object.y + object.h);
-        state.map.w = Math.max(canvasWidth, ...objectsRightBorders);
-        state.map.h = Math.max(canvasHeight, ...objectsBottomBorders);
+        state.map.w = Math.round(Math.max(canvasWidth, ...objectsRightBorders));
+        state.map.h = Math.round(Math.max(canvasHeight, ...objectsBottomBorders));
     }
 
     window.addEventListener('resize', resizeCallback);
@@ -175,8 +206,10 @@
                 const deltaX = state.player.x - gameCanvas.width / 2;
                 const deltaY = state.player.y - gameCanvas.height / 2;
                 context.beginPath();
+                context.fillStyle = object.c;
                 context.rect(object.x - deltaX, object.y - deltaY, object.w, object.h);
                 context.stroke();
+                context.fill();
             });
 
         context.font = '20px Arial';
