@@ -11,8 +11,8 @@ body {
 }
 
 .game {
-    width: 1000px;
-    height: 600px;
+    width: 80%;
+    height: 80%;
 
     /* centralize (vertically + horizontally) the game canvas */
     position: absolute;
