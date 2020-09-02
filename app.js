@@ -17,7 +17,8 @@
         map: {
             w: 0,
             h: 0
-        }
+        },
+        objects: 0
     };
 
     window.addEventListener('keypress', ({ keyCode }) => {
@@ -52,16 +53,16 @@
             state.player.x = 0;
         }
 
-        if (state.player.x > gameCanvas.width - PLAYER_ICON_SIZE) {
-            state.player.x = gameCanvas.width - PLAYER_ICON_SIZE;
+        if (state.player.x > state.map.w - PLAYER_ICON_SIZE) {
+            state.player.x = state.map.w - PLAYER_ICON_SIZE;
         }
 
         if (state.player.y < 0) {
             state.player.y = 0;
         }
 
-        if (state.player.y > gameCanvas.height - PLAYER_ICON_SIZE) {
-            state.player.y = gameCanvas.height - PLAYER_ICON_SIZE;
+        if (state.player.y > state.map.h - PLAYER_ICON_SIZE) {
+            state.player.y = state.map.h - PLAYER_ICON_SIZE;
         }
     }
 
@@ -69,17 +70,11 @@
         state.player.x = x;
         state.player.y = y;
 
-        state.camera.x = x;
-        state.camera.y = y;
+        state.camera.x = gameCanvas.width / 2;
+        state.camera.y = gameCanvas.height / 2;
 
         fixInvalidPlayerPosition();
     }
-    
-    const cameraImage = new Image();
-    cameraImage.src = './camera.svg';
-    await new Promise(resolve => {
-        cameraImage.onload = resolve;
-    });
 
     function resizeCallback() {
         const canvasWidth = Math.round(document.body.clientWidth * 0.8);
@@ -103,13 +98,30 @@
     function drawCanvas() {
         context.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-        map.objects.forEach(object => {
-            context.beginPath();
-            context.rect(object.x, object.y, object.w, object.h);
-            context.stroke();
-        });
+        const displayedObjects = map.objects
+            .filter(object => {
+                const visibleMap = {
+                    left: Math.max((state.player.x - gameCanvas.width / 2), 0),
+                    right: Math.min((state.player.x + gameCanvas.width / 2), state.map.w),
+                    top: Math.max((state.player.y - gameCanvas.height / 2), 0),
+                    bottom: Math.min((state.player.y + gameCanvas.height / 2), state.map.h)
+                };
 
-        context.drawImage(cameraImage, state.camera.x, state.camera.y);
+                return ((object.x > visibleMap.left) && (object.x < visibleMap.right)) ||
+                    (((object.x + object.w) > visibleMap.left) && ((object.x + object.w) < visibleMap.right)) || 
+                    ((object.y > visibleMap.top) && (object.y < visibleMap.bottom)) ||
+                    (((object.y + object.h) > visibleMap.top) && ((object.y + object.y) < visibleMap.bottom))
+            });
+
+            state.objects = displayedObjects.length;
+
+            displayedObjects.forEach(object => {
+                const deltaX = state.player.x - gameCanvas.width / 2;
+                const deltaY = state.player.y - gameCanvas.height / 2;
+                context.beginPath();
+                context.rect(object.x - deltaX, object.y - deltaY, object.w, object.h);
+                context.stroke();
+            });
 
         context.font = '20px Arial';
         context.fillStyle = 'green';
@@ -118,6 +130,8 @@
         context.fillText(`camera [ ${state.camera.x}, ${state.camera.y} ]`, 250, 20);
         context.fillStyle = 'red';
         context.fillText(`map-w: ${state.map.w}, map-h: ${state.map.h}`, 500, 20);
+        context.fillStyle = 'blue';
+        context.fillText(`objects: ${state.objects}`, 800, 20);
 
         window.requestAnimationFrame(drawCanvas);
     }
