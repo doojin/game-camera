@@ -111,6 +111,14 @@
 
         context.drawImage(playerImage, state.player.x, state.player.y);
 
+        context.font = '20px Arial';
+        context.fillStyle = 'green';
+        context.fillText(`player [ ${state.player.x}, ${state.player.y} ]`, 10, 20);
+        context.fillStyle = 'purple';
+        context.fillText(`camera [ ${state.camera.x}, ${state.camera.y} ]`, 250, 20);
+        context.fillStyle = 'red';
+        context.fillText(`map-w: ${state.map.w}, map-h: ${state.map.h}`, 500, 20);
+
         window.requestAnimationFrame(drawCanvas);
     }
 
